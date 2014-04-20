@@ -1,0 +1,71 @@
+crawler.public.portfolio.rightshk.template:
+    params_spec:
+        rights_type:
+            default: 'rightschanges'
+        symbols:
+            default: '*'
+        quant_data:
+            default: stock
+        cache_path:
+            default: 'source/public/portfolio/rightshk/history'
+        crawler_class:
+            default: PublicRightsChangesHKCrawler
+        crawler_module:
+            default: public_portfolio_crawler.rights_hk
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: public
+            queue:
+                crawler.domain.rights_{{ rights_type }}_us #not so sure
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        symbols: {{ symbols | tojson }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.rights{{ rights_type }}
+            type: simple
+
+        crawler_event:
+            name: public.rights_{{ rights_type }}_us
+            expire:
+                days: 4
+
+        crawler: 
+            class: {{ crawler_class }}
+            module: {{ crawler_module }}
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+
+crawler.public.portfolio.rightschangeshk.monthly.debug:
+    template: crawler.public.portfolio.rightshk.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/rightschanges/monthly'
+        crawler_class: PublicRightsChangesHKCrawler
+        crawler_module: public_portfolio_crawler.rights_hk
+        debug: true
+

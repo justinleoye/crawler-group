@@ -1,0 +1,13 @@
+AUTHORS
+CHANGES
+LICENSE
+MANIFEST.in
+Makefile
+README
+README.md
+requirements.txt
+public_portfolio_crawler/__init__.py
+public_portfolio_crawler.egg-info/PKG-INFO
+public_portfolio_crawler.egg-info/SOURCES.txt
+public_portfolio_crawler.egg-info/dependency_links.txt
+public_portfolio_crawler.egg-info/top_level.txt

@@ -1,0 +1,62 @@
+
+cython
+
+#fix timeout issue for grequests
+#git+git://github.com/surfly/gevent.git@1.0rc2#egg=gevent
+gevent>=1.0
+
+
+
+git+ssh://git@git.agutong.com:5678/GeneralLibrary/gevent-socketio-client.git
+
+#git+ssh://git@git.agutong.com:5678/OpenSource/croniter.git
+git+ssh://git@git.agutong.com:5678/GeneralLibrary/jsonize-py.git
+
+git+ssh://git@git.agutong.com:5678/OpenSource/compago.git
+#git+ssh://git@git.agutong.com:5678/GeneralLibrary/redis-namespaced.git
+#git+ssh://git@git.agutong.com:5678/GeneralLibrary/sqlalchemy-duplicate.git
+git+ssh://git@git.agutong.com:5678/OpenSource/pyyaml.git
+#git+ssh://git@git.agutong.com:5678/OpenSource/wsgi_lite.git
+#git+ssh://git@git.agutong.com:5678/OpenSource/eve-docs.git
+
+git+ssh://git@git.agutong.com:5678/OpenSource/zerorpc-python.git
+git+ssh://git@git.agutong.com:5678/OpenSource/python-etcd.git
+
+-e ./pyutils
+
+git+ssh://git@git.agutong.com:5678/GeneralLibrary/updater.git
+#git+ssh://git@git.agutong.com:5678/distributed-computing/quant-rpc.git
+
+
+#-e ./quant-template
+#-e ./quant-data
+#-e ./quant-qdb
+#-e ./quant-dbi
+#-e ./quant-pipeline
+
+#-e ./eve
+#-e ./cerberus
+
+#-e ./zerorpc-python
+-e ./quant-etcd
+#-e ./quant-leveldb
+#-e ./quant-tsdb
+
+#-e ./quant-rpc
+#-e ./quant-wsgi
+#-e ./quant-rpc-flaskapp
+
+#-e ./kuankr
+#-e ./kuankr-core-stock
+#-e ./open-app-flaskapp
+
+
+-e ./quant-serviced
+-e ./quant-executor
+-e ./quant-crawler
+-e ./ytcj-quotation-crawler
+
+#-e ./quant-open-app
+
+-e ./public-portfolio-crawler
+

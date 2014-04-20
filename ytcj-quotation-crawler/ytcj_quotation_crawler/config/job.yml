@@ -1,0 +1,8 @@
+jobs:
+    !multi_include:
+        -   jobs/kline.yml
+        -   jobs/test.yml
+
+dependencies:
+    -   quant_crawler
+

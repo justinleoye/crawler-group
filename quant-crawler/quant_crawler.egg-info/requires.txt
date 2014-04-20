@@ -1,0 +1,6 @@
+requests
+grequests
+pyquery
+PyExecJS
+objgraph
+chardet

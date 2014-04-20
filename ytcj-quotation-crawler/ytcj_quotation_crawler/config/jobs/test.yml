@@ -1,0 +1,8 @@
+
+test.echo:
+    type: test
+    echo: 'hello world'
+
+test.echo.x:
+    type: test
+    echo: 'hello world XXX'

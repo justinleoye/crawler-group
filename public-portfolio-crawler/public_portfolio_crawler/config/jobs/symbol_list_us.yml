@@ -1,0 +1,63 @@
+crawler.public.portfolio.symbollistus.template:
+    params_spec:
+        symbols:
+            default: '*'
+        quant_data:
+            default: stock
+        cache_path:
+            default: 'source/public/portfolio/symbollistus/history'
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: public
+            queue:
+                crawler.domain.symbol_list_us #not so sure
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        symbols: {{ symbols | tojson }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.symbollistus
+            type: simple
+
+        crawler_event:
+            name: public.symbol_list_us
+            expire:
+                days: 4
+
+        crawler: 
+            class: PublicSymbolListUSCrawler
+            module: public_portfolio_crawler.symbol_list_us
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+
+crawler.public.portfolio.symbollistus.monthly.debug:
+    template: crawler.public.portfolio.symbollistus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/symbollistus/monthly'
+        debug: true
+

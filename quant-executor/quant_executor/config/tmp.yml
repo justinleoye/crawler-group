@@ -1,0 +1,107 @@
+alias:
+    mongodb: &mongodb
+        host: localhost
+        port: 27017
+
+default: &default_job_type
+    processor: Processor
+    executor:  Executor
+    serializer: 
+        class: QdbSerializer
+        kwargs:
+            pickle_type: yaml
+            pickle_fields:
+                - state
+            key_field: serialize_id
+            backend: mongo
+            dbname: 'distributed_cep'
+            table: 'job_states'
+            <<: *mongodb
+
+    #TODO bug fix for ShoveSerializer
+    #_serializer: ShoveSerializer('mongodb://localhost:27017/distributed_cep/saved_jobs')
+
+test:
+    <<: *default_job_type
+    executor:  TestExecutor
+
+pyeval:
+    <<: *default_job_type
+    executor:  PyEvalExecutor
+
+piper:
+    <<: *default_job_type
+    executor:  PiperExecutor
+
+writer:
+    <<: *default_job_type
+    executor:  WriterExecutor
+
+reader:
+    <<: *default_job_type
+    executor:  ReaderExecutor
+
+trader:
+    <<: *default_job_type
+    executor:  TraderExecutor
+
+backtest:
+    <<: *default_job_type
+    executor:  
+        class: BacktestExecutor
+    executor_config:
+        qdb:
+            backend: mysql
+            dbname: qfindb_development
+            user: root
+            password: '123456'
+
+paper_trading:
+    <<: *default_job_type
+    executor:  
+        class: PaperTradingExecutor
+
+dts:
+    <<: *default_job_type
+    executor:  
+        class: DtsExecutor
+    executor_config:
+        mysql:
+            database: qfindb_development
+            user: root
+            password: '123456'
+        mongo:
+            database: qfindb_development
+
+data_pipeline:
+    <<: *default_job_type
+    executor:
+        class: DataPipelineExecutor
+        kwargs:
+            pickle_type: 'yaml'
+            qts_qdb:
+                backend: mongo
+                dbname: 'data_pipelines'
+                <<: *mongodb
+
+screener_pipeline:
+    <<: *default_job_type
+    executor:
+        class: ScreenerPipelineExecutor
+        kwargs:
+            pickle_type: 'yaml'
+            qts_qdb:
+                backend: mongo
+                dbname: 'screener_pipelines'
+                <<: *mongodb
+
+job_factory:
+    <<: *default_job_type
+
+crawler:
+    <<: *default_job_type
+    executor:  
+        class: CrawlerExecutor
+        module: distributed_cep.executors.crawler
+
+

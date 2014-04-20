@@ -1,0 +1,42 @@
+job_types:
+    test:
+        executor: quant_executor.executors.test.TestExecutor
+
+    pyeval:
+        executor: quant_executor.executors.pyeval.PyEvalExecutor
+
+job_plugins:
+    #plugin order is important!!
+    #inherit -> template -> xxx
+    -   class: InheritPlugin
+        module: quant_executor.plugins.inherit
+
+    -   class: TemplatePlugin
+        module: quant_executor.plugins.template
+        kwargs:
+            default_params:
+                qfindb_path: '/home/w/qfindb'
+
+executor:
+    state_saver:
+        class: LevelDictSerialized
+        module: quant_leveldb
+        kwargs:
+            db: '/data/quant_executor/state'
+            serializer:
+                __obj__: pyutils.serializers.msgpack_ext
+
+jobs:
+    test.echo:
+        type: test
+        echo: 'hello world'
+    test.pyeval:
+        type: pyeval
+        func: 'os.system'
+        args: 
+            - 'ls ~/'
+        
+version: 1.0
+description: default config
+    
+

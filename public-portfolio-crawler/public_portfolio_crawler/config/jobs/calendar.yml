@@ -1,0 +1,70 @@
+crawler.public.portfolio.calendar.template:
+    params_spec:
+        calendar_type:
+            default: 'calendar_en'
+        symbols:
+            default: '*'
+        quant_data:
+            default: stock
+        cache_path:
+            default: 'source/public/portfolio/calendar_en/history'
+        crawler_class:
+            default: PublicCalendarENCrawler
+        crawler_module:
+            default: public_portfolio_crawler.calendar
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: public
+            queue:
+                crawler.domain.calendar_{{ calendar_type }} #not so sure
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        symbols: {{ symbols | tojson }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.calendar{{ calendar_type }}
+            type: simple
+
+        crawler_event:
+            name: public.calendar_{{ calendar_type }}_us
+            expire:
+                days: 4
+
+        crawler: 
+            class: {{ crawler_class }}
+            module: {{ crawler_module }}
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+
+crawler.public.portfolio.calendar_en.monthly.debug:
+    template: crawler.public.portfolio.calendar.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/calendar_en/monthly'
+        crawler_class: PublicCalendarENCrawler
+        crawler_module: public_portfolio_crawler.calendar
+        debug: true

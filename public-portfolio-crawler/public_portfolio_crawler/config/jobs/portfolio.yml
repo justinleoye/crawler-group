@@ -1,0 +1,101 @@
+crawler.public.portfolio.template:
+    params_spec:
+        symbols:
+            default: '*'
+        quant_data:
+            default: stock
+        cache_path:
+            default: 'source/public/portfolio/history'
+        crawler_class:
+            default: PublicCirculateStockHolderCrawler
+        crawler_module:
+            default: public_portfolio_crawler.portfolio
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: public
+            queue:
+                crawler.domain.circulate #not so sure
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        symbols: {{ symbols | tojson }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.portfolios
+            type: simple
+
+        crawler_event:
+            name: public.portfolio
+            expire:
+                days: 4
+
+        crawler: 
+            class: {{ crawler_class }}
+            module: {{ crawler_module }}
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+
+crawler.public.portfolio.circulatestockholder.monthly.debug:
+    template: crawler.public.portfolio.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/circulatestockholder/monthly'
+        crawler_class: PublicCirculateStockHolderCrawler
+        crawler_module: public_portfolio_crawler.portfolio
+        debug: true
+
+crawler.public.portfolio.stockholder.monthly.debug:
+    template: crawler.public.portfolio.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/stockholder/monthly'
+        crawler_class: PublicStockHolderCrawler
+        crawler_module: public_portfolio_crawler.portfolio
+        debug: true
+
+crawler.public.portfolio.fundstockholder.monthly.debug:
+    template: crawler.public.portfolio.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/fundstockholder/monthly'
+        crawler_class: PublicFundStockHolderCrawler
+        crawler_module: public_portfolio_crawler.portfolio
+        debug: true
+
+crawler.public.portfolio.fundownedlist.monthly.debug:
+    template: crawler.public.portfolio.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/fundownedlist/monthly'
+        crawler_class: PublicFundOwnedListCrawler
+        crawler_module: public_portfolio_crawler.portfolio
+        debug: true

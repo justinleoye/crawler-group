@@ -1,0 +1,94 @@
+crawler.public.portfolio.insiderus.template:
+    params_spec:
+        insider_type:
+            default: 'transaction'
+        symbols:
+            default: '*'
+        quant_data:
+            default: stock
+        cache_path:
+            default: 'source/public/portfolio/insiderus/history'
+        crawler_class:
+            default: PublicInsiderTransactionUSCrawler
+        crawler_module:
+            default: public_portfolio_crawler.insider_us
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: public
+            queue:
+                crawler.domain.insider_{{ insider_type }}_us #not so sure
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        symbols: {{ symbols | tojson }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.insider{{ insider_type }}
+            type: simple
+
+        crawler_event:
+            name: public.insider_{{ insider_type }}_us
+            expire:
+                days: 4
+
+        crawler: 
+            class: {{ crawler_class }}
+            module: {{ crawler_module }}
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+
+crawler.public.portfolio.insidertransactionus.monthly.debug:
+    template: crawler.public.portfolio.insiderus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/insidertransactionus/monthly'
+        crawler_class: PublicInsiderTransactionUSCrawler
+        crawler_module: public_portfolio_crawler.insider_us
+        debug: true
+
+crawler.public.portfolio.topinstitutionalholdersus.monthly.debug:
+    template: crawler.public.portfolio.insiderus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/topinstitutionalholdersus/monthly'
+        crawler_class: PublicTopInstitutionalHoldersUSCrawler
+        crawler_module: public_portfolio_crawler.insider_us
+        debug: true
+
+
+crawler.public.portfolio.topmutualfundholdersus.monthly.debug:
+    template: crawler.public.portfolio.insiderus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/topmutualfundholdersus/monthly'
+        crawler_class: PublicTopMutualFundHoldersUSCrawler
+        crawler_module: public_portfolio_crawler.insider_us
+        debug: true
+

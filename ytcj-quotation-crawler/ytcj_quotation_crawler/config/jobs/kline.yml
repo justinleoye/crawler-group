@@ -1,0 +1,145 @@
+crawler.ytcj.kline.template:
+    params_spec:
+        period:
+            template: period
+            default: m1
+        symbols:
+            default: '*'
+        count:
+            default: 100000000
+        quant_data:
+            default: futures
+        cache_path:
+            default: 'source/ytcj/kline/history'
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: ytcj
+            queue:
+                crawler.domain.baring
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        fields:
+            - volume
+            - amount
+        symbols: {{ symbols | tojson }}
+        period: {{ period }}
+        count: {{ count }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.{{ period }}_klines
+            type: simple
+
+        crawler_event:
+            name: ytcj.kline
+            expire:
+                days: 4
+
+        crawler: 
+            class: YtcjKlineCrawler
+            module: ytcj_quotation_crawler.kline
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+crawler.ytcj.kline.m1:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m5
+
+crawler.ytcj.kline.m5:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m5
+
+crawler.ytcj.kline.m30:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m5
+
+crawler.ytcj.kline.day:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m5
+
+crawler.ytcj.kline.m1.daily.stock:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m1
+        quant_data: stock
+        count: 300
+        symbols:
+            - STOCK
+        cache_path: 'source/ytcj/kline/daily'
+
+crawler.ytcj.kline.m1.daily.stock.debug:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m1
+        quant_data: stock
+        count: 300
+        symbols:
+            - STOCK
+        cache_path: 'source/ytcj/kline/daily'
+        debug: true
+
+crawler.ytcj.kline.m1.daily.futures:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m1
+        quant_data: futures
+        count: 300
+        symbols:
+            - '*'
+        cache_path: 'source/ytcj/kline/daily'
+
+crawler.ytcj.kline.m1.weekly.futures:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m1
+        quant_data: futures
+        count: 1500 #300*5
+        symbols:
+            - '*'
+        cache_path: 'source/ytcj/kline/weekly'
+
+crawler.ytcj.kline.m1.monthly.futures:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m1
+        quant_data: futures
+        count: 6000 #300*20
+        symbols:
+            - '*'
+        cache_path: 'source/ytcj/kline/monthly'
+
+crawler.ytcj.kline.m1.yearly.futures:
+    template: crawler.ytcj.kline.template
+    params:
+        period: m1
+        quant_data: futures
+        count: 75000 #300*250
+        symbols:
+            - '*'
+        cache_path: 'source/ytcj/kline/yearly'
+
+

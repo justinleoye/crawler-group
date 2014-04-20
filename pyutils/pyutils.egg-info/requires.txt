@@ -1,0 +1,10 @@
+colorama
+colorlog
+Jinja2
+chardet
+PyYAML
+pyaml
+python-dateutil
+parsedatetime
+configure
+pudb

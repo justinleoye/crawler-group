@@ -1,0 +1,14 @@
+jobs:
+    !multi_include:
+        -   jobs/portfolio.yml
+        -   jobs/consult.yml
+        -   jobs/simu.yml
+        -   jobs/fund.yml
+        -   jobs/symbol_list_us.yml
+        -   jobs/insider_us.yml
+        -   jobs/hedge_funds_us.yml
+        -   jobs/rights_hk.yml
+        -   jobs/calendar.yml
+        -   jobs/test.yml
+dependencies:
+    -   quant_crawler

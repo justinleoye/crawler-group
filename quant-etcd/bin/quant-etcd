@@ -1,0 +1,8 @@
+#!/bin/env python
+from quant_etcd import cli
+
+if __name__ == "__main__":
+    cli.app.run()
+    
+
+

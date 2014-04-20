@@ -1,0 +1,5 @@
+job_types:
+    crawler:
+        executor: quant_crawler.executor.CrawlerExecutor
+
+

@@ -1,0 +1,114 @@
+crawler.public.portfolio.hedgefundsus.template:
+    params_spec:
+        hedge_funds_type:
+            default: 'fundslist'
+        symbols:
+            default: '*'
+        quant_data:
+            default: stock
+        cache_path:
+            default: 'source/public/portfolio/hedgefundsus/history'
+        crawler_class:
+            default: PublicHedgeFundsListnUSCrawler
+        crawler_module:
+            default: public_portfolio_crawler.hedge_funds_us
+        debug:
+            default: false
+
+    job_template: |
+        type: crawler
+
+        schdule:
+            resource:
+                domain: public
+            queue:
+                crawler.domain.hedge_funds_{{ hedge_funds_type }}_us #not so sure
+
+        debug: {{ debug }}
+        max_fail: 8
+        show_memory_stats: false
+        chain_subtask_result: false
+
+        quant_data: {{ quant_data }}
+        symbols: {{ symbols | tojson }}
+        timeout: 8
+
+        cache_path: {{ cache_path }}
+
+        output:
+            stream: core.{{ quant_data }}.hedge_funds{{ hedge_funds_type }}
+            type: simple
+
+        crawler_event:
+            name: public.hedge_funds_{{ hedge_funds_type }}_us
+            expire:
+                days: 4
+
+        crawler: 
+            class: {{ crawler_class }}
+            module: {{ crawler_module }}
+            kwargs:
+                plugins:
+                -   class: SleepPlugin
+                    kwargs:
+                        exception_sleep: 30
+                        sleep: 5
+                -   class: RetryPlugin
+                    kwargs:
+                        max_retry: 4
+                    
+
+crawler.public.portfolio.hedgefundslistus.monthly.debug:
+    template: crawler.public.portfolio.hedgefundsus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/hedgefundslistus/monthly'
+        crawler_class: PublicHedgeFundsListUSCrawler
+        crawler_module: public_portfolio_crawler.hedge_funds_us
+        debug: true
+
+crawler.public.portfolio.hedgefundus.monthly.debug:
+    template: crawler.public.portfolio.hedgefundsus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/hedgefundus/monthly'
+        crawler_class: PublicHedgeFundUSCrawler
+        crawler_module: public_portfolio_crawler.hedge_funds_us
+        debug: true
+
+crawler.public.portfolio.hedgefunduswhale.monthly.debug:
+    template: crawler.public.portfolio.hedgefundsus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/hedgefunduswhale/monthly'
+        crawler_class: PublicHedgeFundUSWhaleCrawler
+        crawler_module: public_portfolio_crawler.hedge_funds_us
+        debug: true
+
+crawler.public.portfolio.stockpriceus.monthly.debug:
+    template: crawler.public.portfolio.hedgefundsus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/stockpriceus/monthly'
+        crawler_class: PublicStockPriceUSCrawler
+        crawler_module: public_portfolio_crawler.hedge_funds_us
+        debug: true
+
+crawler.public.portfolio.stocktreeapple.monthly.debug:
+    template: crawler.public.portfolio.hedgefundsus.template
+    params:
+        symbols:
+            - STOCK
+        quant_data: stock
+        cache_path: 'source/public/portfolio/stocktreeapple/monthly'
+        crawler_class: PublicStockTreeAppleCrawler
+        crawler_module: public_portfolio_crawler.stocktree_apple
+        debug: true
